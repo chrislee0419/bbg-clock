@@ -5,8 +5,8 @@
 #include "tm1637.h"
 #include "gpio.h"
 
-#define CLOCK_DURATION_MS       5
-static struct timespec clockDelay = { .tv_sec = 0, .tv_nsec = CLOCK_DURATION_MS };
+#define CLOCK_DURATION_NS       1e6		// 100 microseconds
+static struct timespec clockDelay = { .tv_sec = 0, .tv_nsec = CLOCK_DURATION_NS };
 #define CLOCK_SLEEP             nanosleep(&clockDelay, NULL)
 
 #define MAX_CMD_LEN             8
@@ -74,7 +74,8 @@ static uint8_t handle_ack()
     gpio_set_data_in();
     CLOCK_SLEEP;
 
-    uint8_t ack = gpio_get_data();
+    uint8_t ack = 0;
+	ack = gpio_get_data();
     gpio_clock_high();
     CLOCK_SLEEP;
     gpio_clock_low();
