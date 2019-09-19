@@ -49,22 +49,24 @@ static uint8_t CONVERSION_TABLE[10] =
 static void send_start()
 {
     // "When CLK is a high level and DIO changes from high to low level, data input starts."
-    gpio_data_high();
-    gpio_clock_high();
-    CLOCK_SLEEP;
+    //gpio_data_high();
+    //gpio_clock_high();
+    //CLOCK_SLEEP;
     gpio_data_low();
+    CLOCK_SLEEP;
 }
 
 static void send_stop()
 {
     // "When CLK is a high level and DIO changes from low level to high level, data input ends."
-    gpio_clock_low();
-    CLOCK_SLEEP;
+    //gpio_clock_low();
+    //CLOCK_SLEEP;
     gpio_data_low();
     CLOCK_SLEEP;
     gpio_clock_high();
     CLOCK_SLEEP;
     gpio_data_high();
+    CLOCK_SLEEP;
 }
 
 static uint8_t handle_ack()
@@ -75,12 +77,14 @@ static uint8_t handle_ack()
     CLOCK_SLEEP;
 
     uint8_t ack = 0;
-	ack = gpio_get_data();
     gpio_clock_high();
     CLOCK_SLEEP;
-    gpio_clock_low();
+	ack = gpio_get_data();
 
+    CLOCK_SLEEP;
+    gpio_clock_low();
     gpio_set_data_out();
+    CLOCK_SLEEP;
 
     if (ack < 0)
         printf("tm1637:handle_ack: failed to get ack\n");
@@ -94,6 +98,7 @@ static void send_byte(uint8_t byte)
     for (int i = 0; i < 8; ++i)
     {
         gpio_clock_low();
+        CLOCK_SLEEP;
 
         if (byte & 1)
             gpio_data_high();
@@ -114,6 +119,7 @@ static int send_command(uint8_t *cmd, size_t cmd_size)
 
     uint8_t ack;
     uint8_t hadRedo = 0;
+    uint8_t error = 0;
     for (int i = 0; i < cmd_size; ++i)
     {
         send_byte(cmd[i]);
@@ -128,6 +134,7 @@ static int send_command(uint8_t *cmd, size_t cmd_size)
         {
             printf("tm1637:send_command: ack failed, skipping\n");
             hadRedo = 0;
+            error = 1;
         }
         else
         {
@@ -137,7 +144,7 @@ static int send_command(uint8_t *cmd, size_t cmd_size)
 
     send_stop();
 
-    return 0;
+    return error;
 }
 
 static void convert_number(uint8_t num, uint8_t *out1, uint8_t *out2, uint8_t showZeroInTens)
@@ -161,8 +168,8 @@ static void convert_number(uint8_t num, uint8_t *out1, uint8_t *out2, uint8_t sh
 int tm1637_init()
 {
     int err = gpio_init();
-    err |= gpio_clock_low();
-    err |= gpio_data_low();
+    err |= gpio_clock_high();
+    err |= gpio_data_high();
     if (err)
         printf("tm1637_init: failed\n");
 

@@ -57,15 +57,7 @@ int gpio_init()
     err = write_to_file(GPIO_DIR_FN(GPIO_CLK_PIN), GPIO_DIR_OUT);
     err |= write_to_file(GPIO_DIR_FN(GPIO_DAT_PIN), GPIO_DIR_OUT);
     if (err)
-    {
         printf("gpio_init: error occurred when setting gpio direction to out\n");
-        return err;
-    }
-
-    err = gpio_clock_low();
-    err |= gpio_data_low();
-    if (err)
-        printf("gpio_init: error occurred when setting gpio pins to low\n");
 
     return err;
 }
