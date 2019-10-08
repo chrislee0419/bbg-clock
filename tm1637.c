@@ -211,13 +211,16 @@ int tm1637_set_time(uint8_t hour, uint8_t minute, uint8_t pm)
 
     data[0] = CMD_SET_ADDR | CMD_SET_ADDR_START;
 
-    if (hour > 12)
+    if (hour > 12 || hour < 1)
         hour = 12;
     convert_number(hour, data+1, data+2, 0);
 
     if (minute > 59)
         minute = 59;
     convert_number(minute, data+3, data+4, 1);
+
+    if (pm)
+        data[4] |= SEG_DECIMAL;
 
     // colon and decimals?
     data[5] = 0xff;
