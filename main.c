@@ -22,25 +22,32 @@ int main()
     //tm1637_send_bytes((uint8_t*)&bytes, 4);
 
     uint8_t write_cmd = 0x40;
-    uint32_t nums = 0x01;
+    //uint32_t nums = 0x01;
     uint8_t others = 0x01;
-    uint8_t bytes[6];
-    bytes[0] = 0x40;
+    uint8_t bytes[7];
+	memset(bytes, 0, 7);
+    bytes[0] = 0xc0;
     while (1)
     {
-        nums <<= 1;
-        if (!nums)
-            nums = 0x01;
-        memcpy(bytes+1, &nums, 4);
+        //nums <<= 1;
+        //if (!nums)
+        //    nums = 0x01;
+        //memcpy(bytes+1, &nums, 4);
 
         others <<= 1;
         if (!others)
             others = 0x01;
-        bytes[6] = others;
+        bytes[1] = others;
+        bytes[2] = others;
+        bytes[3] = others;
+        bytes[4] = others;
+        bytes[5] = others;
+		bytes[6] = others;
 
-        printf("printing %lu, %u\n", (unsigned long)nums, (unsigned char)others);
-        tm1637_send_bytes(&write_cmd, 1);
-        tm1637_send_bytes((uint8_t*)bytes, 6);
+        //printf("printing %lu, %u\n", (unsigned long)nums, (unsigned char)others);
+		printf("displaying %u\n", (unsigned char)others);
+		tm1637_send_bytes(&write_cmd, 1);
+        tm1637_send_bytes((uint8_t*)bytes, 7);
         sleep(2);
     }
 
