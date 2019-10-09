@@ -5,7 +5,7 @@
 #include "tm1637.h"
 #include "gpio.h"
 
-#define CLOCK_DURATION_NS       1e6		// 100 microseconds
+#define CLOCK_DURATION_NS       1e4		// 1 microsecond
 static struct timespec clockDelay = { .tv_sec = 0, .tv_nsec = CLOCK_DURATION_NS };
 #define CLOCK_SLEEP             nanosleep(&clockDelay, NULL)
 
