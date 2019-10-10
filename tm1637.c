@@ -211,7 +211,9 @@ int tm1637_set_time(uint8_t hour, uint8_t minute, uint8_t colon)
 
     data[0] = CMD_SET_ADDR | CMD_SET_ADDR_START;
 
-    if (hour > 12 || hour < 1)
+    if (hour > 23)
+        hour = 23;
+    else if (hour < 1)
         hour = 12;
     convert_number(hour, data+1, data+2, 0);
 
@@ -223,9 +225,9 @@ int tm1637_set_time(uint8_t hour, uint8_t minute, uint8_t colon)
         data[2] |= SEG_COLON;
 
     // colon and decimals?
-    data[5] = 0xff;
+    //data[5] = 0xff;
 
-    err = send_command(data, 6);
+    err = send_command(data, 5);
     if (err)
         printf("tm1637_set_time: error occurred when setting digits\n");
 
