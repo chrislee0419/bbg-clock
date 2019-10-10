@@ -1,0 +1,12 @@
+[Unit]
+Description=Simple TM1637 clock display for the BeagleBone Green using the system's time
+After=time-sync.target
+
+[Service]
+Type=simple
+ExecStart=/root/bbg-clock/bbg-clock
+StandardOutput=syslog
+SyslogIdentifier=bbg-clock
+
+[Install]
+WantedBy=multi-user.target
