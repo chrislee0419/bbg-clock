@@ -1,6 +1,7 @@
 #include <stdio.h>
+#include <stdint.h>
 #include <unistd.h>
-#include <string.h>
+#include <time.h>
 
 #include "tm1637.h"
 
@@ -8,47 +9,47 @@ int main()
 {
     if (tm1637_init())
     {
-        printf("Error occurred during initialization, shutting down\n");
+        printf("error occurred during initialization, shutting down\n");
         return 1;
     }
 
-    //tm1637_set_brightness(8);
-    //tm1637_set_time(12, 59, 1);
+    tm1637_set_brightness(8);
 
-    tm1637_set_brightness(4);
-    //uint32_t bytes = 0x40000000;
-    //tm1637_send_bytes((uint8_t*)&bytes, 1);
-    //bytes = 0xc0ffffff;
-    //tm1637_send_bytes((uint8_t*)&bytes, 4);
-
-    uint8_t write_cmd = 0x40;
-    //uint32_t nums = 0x01;
-    uint8_t others = 0x01;
-    uint8_t bytes[7];
-	memset(bytes, 0, 7);
-    bytes[0] = 0xc0;
+    time_t rawtime;
+    struct tm *time_info;
+    uint8_t current_hour;
+    uint8_t current_minute;
     while (1)
     {
-        //nums <<= 1;
-        //if (!nums)
-        //    nums = 0x01;
-        //memcpy(bytes+1, &nums, 4);
+        // refresh time every day
+        time(&rawtime);
+        time_info = localtime(&rawtime);
 
-        others <<= 1;
-        if (!others)
-            others = 0x01;
-        bytes[1] = others;
-        bytes[2] = others;
-        bytes[3] = others;
-        bytes[4] = others;
-        bytes[5] = others;
-		bytes[6] = others;
+        current_hour = time_info->tm_hour;
+        current_minute = time_info->tm_min;
 
-        //printf("printing %lu, %u\n", (unsigned long)nums, (unsigned char)others);
-		printf("displaying %u\n", (unsigned char)others);
-		tm1637_send_bytes(&write_cmd, 1);
-        tm1637_send_bytes((uint8_t*)bytes, 7);
-        sleep(2);
+        printf("setting current time display to: %2u:%2u\n", current_hour, current_minute);
+        fflush(stdout);
+
+        tm1637_set_time(current_hour, current_minute, 1);
+
+        sleep(60 - time_info->tm_sec);
+        while (1)
+        {
+            // increment minute/hour
+            ++current_minute;
+            if (current_minute >= 60)
+            {
+                ++current_hour;
+                current_minute = 0;
+            }
+
+            if (current_hour >= 24)
+                break;
+
+            tm1637_set_time(current_hour, current_minute, 1);
+            sleep(60);
+        }
     }
 
     return 0;
