@@ -9,7 +9,7 @@
 int tm1637_init();
 
 int tm1637_set_brightness(uint8_t brightness);
-int tm1637_set_time(uint8_t hour, uint8_t minute, uint8_t pm);
+int tm1637_set_time(uint8_t hour, uint8_t minute, uint8_t colon);
 
 void tm1637_send_bytes(uint8_t *bytes, uint8_t size);
 

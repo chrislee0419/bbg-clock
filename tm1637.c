@@ -27,7 +27,7 @@ static struct timespec clockDelay = { .tv_sec = 0, .tv_nsec = CLOCK_DURATION_NS 
 #define SEG_BOT_L               0x10
 #define SEG_TOP_L               0x20
 #define SEG_MID                 0x40
-#define SEG_DECIMAL             0x80
+#define SEG_COLON               0x80
 
 static uint8_t CONVERSION_TABLE[10] =
 {
@@ -195,7 +195,7 @@ int tm1637_set_brightness(uint8_t brightness)
     return send_command(&controlWord, 1);
 }
 
-int tm1637_set_time(uint8_t hour, uint8_t minute, uint8_t pm)
+int tm1637_set_time(uint8_t hour, uint8_t minute, uint8_t colon)
 {
     uint8_t data[MAX_CMD_LEN];
     int err = 0;
@@ -219,8 +219,8 @@ int tm1637_set_time(uint8_t hour, uint8_t minute, uint8_t pm)
         minute = 59;
     convert_number(minute, data+3, data+4, 1);
 
-    if (pm)
-        data[4] |= SEG_DECIMAL;
+    if (colon)
+        data[2] |= SEG_COLON;
 
     // colon and decimals?
     data[5] = 0xff;
